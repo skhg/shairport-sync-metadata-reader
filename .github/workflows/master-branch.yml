@@ -1,0 +1,80 @@
+name: Release from master
+
+on:
+  push:
+    branches:
+      - 'master'
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: "Checkout master"
+        uses: actions/checkout@v2
+
+      - name: "Set up JDK 1.8"
+        uses: actions/setup-java@v1
+        with:
+          java-version: 1.8
+
+      - name: "Maven release"
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          mvn -B -DpushChanges=false release:clean release:prepare
+
+      - name: "Push changes to tags and master"
+        uses: ad-m/github-push-action@master
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: 'Get latest tag name'
+        id: previoustag
+        uses: "WyriHaximus/github-action-get-previous-tag@master"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: 'Checkout the newly created tag'
+        uses: actions/checkout@v2
+        with:
+          ref: ${{ steps.previoustag.outputs.tag }}
+
+      - name: 'Build the released version'
+        run: |
+          mvn clean install
+
+      - name: 'Generic name for jar file'
+        run: |
+          mv target/*.jar target/shairport-sync-metadata-reader-latest.jar
+
+      - name: 'Tag as latest'
+        uses: "marvinpinto/action-automatic-releases@latest"
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          automatic_release_tag: "latest"
+          prerelease: false
+          files: |
+            target/*.jar
+
+      - name: "Copy jar file to deployment location"
+        uses: appleboy/scp-action@master
+        env:
+          HOST: ${{ secrets.DEPLOY_HOST }}
+          USERNAME: ${{ secrets.DEPLOY_USERNAME }}
+          PORT: ${{ secrets.DEPLOY_PORT }}
+          KEY: ${{ secrets.DEPLOY_KEY }}
+        with:
+          source: "target/shairport-sync-metadata-reader-latest.jar"
+          target: "shairport-sync-metadata-reader"
+
+      - name: "Restart the deployed service"
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.DEPLOY_HOST }}
+          username: ${{ secrets.DEPLOY_USERNAME }}
+          key: ${{ secrets.DEPLOY_KEY }}
+          port: ${{ secrets.DEPLOY_PORT }}
+          script: |
+            /etc/init.d/shairport-sync-metadata-reader restart
