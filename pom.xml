@@ -9,7 +9,7 @@
 	</parent>
 	<groupId>ie.jackhiggins</groupId>
 	<artifactId>shairport-sync-metadata-reader</artifactId>
-	<version>0.0.7</version>
+	<version>0.0.8-SNAPSHOT</version>
 	<name>shairport-sync-metadata-reader</name>
 	<description>Serve the metadata from shairport-sync</description>
 
@@ -132,8 +132,4 @@
 			</plugin>
 		</plugins>
 	</build>
-
-  <scm>
-    <tag>shairport-sync-metadata-reader-0.0.7</tag>
-  </scm>
 </project>
