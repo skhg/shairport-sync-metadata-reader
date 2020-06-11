@@ -11,7 +11,6 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 
-import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
 @Slf4j
@@ -33,7 +32,7 @@ public class SongBpmDotComService implements TempoRetrievalService {
 
     @Async
     @Override
-    public CompletableFuture<Optional<Integer>> getSongBpm(String artist, String album, String title) {
+    public CompletableFuture<Integer> getSongBpm(String artist, String album, String title) {
         WebClient.RequestBodyUriSpec post = client.post();
 
         RequestBody body = RequestBody.builder()
@@ -58,9 +57,10 @@ public class SongBpmDotComService implements TempoRetrievalService {
                     searchResponse.getSearch()
                             .getSongs().stream()
                             .findFirst()
-                            .map(Song::getTempo));
+                            .map(Song::getTempo)
+                            .orElse(null));
         }else{
-            CompletableFuture<Optional<Integer>> failedFuture = CompletableFuture.completedFuture(Optional.empty());
+            CompletableFuture<Integer> failedFuture = CompletableFuture.completedFuture(null);
             failedFuture.cancel(true);
             return failedFuture;
         }

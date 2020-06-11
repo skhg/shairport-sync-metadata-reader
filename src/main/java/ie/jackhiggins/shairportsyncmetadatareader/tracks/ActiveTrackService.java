@@ -52,11 +52,10 @@ public class ActiveTrackService {
                 .whenComplete((result, ex) -> setMetadataBpm(result));
     }
 
-    private void setMetadataBpm(Optional<Integer> bpm){
-        // This would be more suitable as a pub/sub model but we only have one client for now
+    void setMetadataBpm(Integer bpm){
         log.info("Got BPM of {} for playing track", bpm);
-        currentBpm = bpm;
-
-        bpm.ifPresent(visualiserService::sendCurrentTempo);
+        currentBpm = Optional.ofNullable(bpm);
+        currentBpm.ifPresent(visualiserService::sendCurrentTempo);
+        // This would be more suitable as a pub/sub model but we only have one client for now
     }
 }

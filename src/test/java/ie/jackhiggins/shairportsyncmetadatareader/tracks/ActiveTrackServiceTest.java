@@ -15,6 +15,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.is;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -68,8 +71,8 @@ class ActiveTrackServiceTest {
 
     @Test
     public void setCurrentTrack_trackChanged_getsNewBpmAndSendsIt(){
-        CompletableFuture<Optional<Integer>> completedResult = new CompletableFuture<>();
-        completedResult.complete(Optional.of(1));
+        CompletableFuture<Integer> completedResult = new CompletableFuture<>();
+        completedResult.complete(1);
 
         when(tempoRetrievalService.getSongBpm(any(), any(), any())).thenReturn(completedResult);
 
@@ -81,5 +84,24 @@ class ActiveTrackServiceTest {
 
         verify(tempoRetrievalService, times(1)).getSongBpm("Foals", "Part 1 Everything Not Saved Will Be Lost", "Exits");
         verify(visualiserService, times(1)).sendCurrentTempo(1);
+    }
+
+    @Test
+    public void setCurrentTrack_trackChanged_getsNullBpmAndDoesNotSendIt(){
+        CompletableFuture<Integer> completedResult = new CompletableFuture<>();
+        completedResult.complete(null);
+
+        when(tempoRetrievalService.getSongBpm(any(), any(), any())).thenReturn(completedResult);
+
+        activeTrackService.setCurrentTrack(Track.builder()
+                .album("Odyssée (Version acoustique)")
+                .artist("L'Impératrice")
+                .title("Parfum thérémine - Version acoustique")
+                .build());
+
+        verify(tempoRetrievalService, times(1)).getSongBpm("L'Impératrice", "Odyssée (Version acoustique)", "Parfum thérémine - Version acoustique");
+        verifyNoInteractions(visualiserService);
+
+        assertThat(activeTrackService.getCurrentBpm(), is(equalTo(Optional.empty())));
     }
 }
