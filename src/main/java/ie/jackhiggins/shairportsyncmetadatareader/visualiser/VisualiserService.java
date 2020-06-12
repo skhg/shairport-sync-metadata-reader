@@ -27,7 +27,7 @@ public class VisualiserService {
     }
 
     public void sendCurrentTempo(Integer bpm){
-        WebClient.RequestBodyUriSpec post = client.post();
+        WebClient.RequestBodyUriSpec post = client.put();
 
         RequestBody body = RequestBody.builder()
                  .bpm(bpm)

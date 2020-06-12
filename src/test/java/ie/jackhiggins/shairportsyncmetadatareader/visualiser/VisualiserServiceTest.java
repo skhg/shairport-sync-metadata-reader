@@ -32,7 +32,7 @@ class VisualiserServiceTest {
     public void sendCurrentTempo_sendsPostRequestInCorrectFormat(){
         visualiserService.sendCurrentTempo(123);
 
-        verify(postRequestedFor(urlEqualTo("/tempo"))
+        verify(putRequestedFor(urlEqualTo("/tempo"))
                 .withHeader(HttpHeaders.CONTENT_TYPE, equalTo(MediaType.APPLICATION_JSON_VALUE))
                 .withRequestBody(equalToJson("{\"bpm\":123}"))
         );
