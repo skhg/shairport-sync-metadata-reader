@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.util.Base64;
 import java.util.Optional;
+import java.util.function.Supplier;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -21,6 +22,9 @@ public class ReaderService {
 
     @Value("${shairport-metadata-stream.location}")
     String streamLocation;
+
+    Supplier<Boolean> onStreamLoop = this::keepReading;
+    Runnable onStreamEnded = this::streamEnded;
 
     final ActiveTrackService activeTrackService;
 
@@ -32,6 +36,14 @@ public class ReaderService {
 
     private Track playingTrack = new Track();
 
+    private boolean keepReading(){
+        return true;
+    }
+
+    private void streamEnded(){
+        log.info("Metadata stream has ended.");
+    }
+
     public ReaderService(ActiveTrackService activeTrackService) {
         this.activeTrackService = activeTrackService;
     }
@@ -40,12 +52,11 @@ public class ReaderService {
     public void runReader() throws IOException {
         RandomAccessFile pipeIn = new RandomAccessFile(streamLocation, "r");
 
-        while(true){
+        while(onStreamLoop.get()){
             String line = pipeIn.readLine();
 
             if(line == null){
-                log.info("Metadata stream has ended");
-                break;
+                onStreamEnded.run();
             }else{
                 processRawLine(line);
             }
