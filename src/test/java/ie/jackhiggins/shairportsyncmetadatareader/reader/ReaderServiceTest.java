@@ -97,6 +97,7 @@ class ReaderServiceTest {
 
     @Test
     public void onStreamEnded_keepsStreamLoopTrueByDefault(){
+        readerService.retryWaitSeconds = 1;
         readerService.onStreamEnded.run();
         assertThat(readerService.onStreamLoop.get(), is(true));
     }

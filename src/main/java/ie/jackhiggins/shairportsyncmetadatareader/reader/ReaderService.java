@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.util.Base64;
 import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -22,6 +23,9 @@ public class ReaderService {
 
     @Value("${shairport-metadata-stream.location}")
     String streamLocation;
+
+    @Value("${shairport-metadata-stream.retryWaitSeconds:30}")
+    int retryWaitSeconds;
 
     Supplier<Boolean> onStreamLoop = this::keepReading;
     Runnable onStreamEnded = this::streamEnded;
@@ -40,8 +44,10 @@ public class ReaderService {
         return true;
     }
 
+    @SneakyThrows
     private void streamEnded(){
-        log.info("Metadata stream has ended.");
+        log.debug("Metadata stream has ended.");
+        TimeUnit.SECONDS.sleep(retryWaitSeconds);
     }
 
     public ReaderService(ActiveTrackService activeTrackService) {
