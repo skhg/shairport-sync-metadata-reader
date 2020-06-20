@@ -100,7 +100,13 @@ class ActiveTrackServiceTest {
                 .build());
 
         verify(tempoRetrievalService, times(1)).getSongBpm("L'Impératrice", "Odyssée (Version acoustique)", "Parfum thérémine - Version acoustique");
-        verifyNoInteractions(visualiserService);
+        verify(visualiserService, times(1)).sendCurrentTrack(Track.builder()
+                .album("Odyssée (Version acoustique)")
+                .artist("L'Impératrice")
+                .title("Parfum thérémine - Version acoustique")
+                .build());
+        verifyNoMoreInteractions(visualiserService);
+        verifyNoMoreInteractions(tempoRetrievalService);
 
         assertThat(activeTrackService.getCurrentBpm(), is(equalTo(Optional.empty())));
     }

@@ -45,6 +45,8 @@ public class ActiveTrackService {
             return;
         }
 
+        visualiserService.sendCurrentTrack(currentTrack);
+
         tempoRetrievalService.getSongBpm(
                 currentTrack.getArtist().orElse(StringUtils.EMPTY),
                 currentTrack.getAlbum().orElse(StringUtils.EMPTY),

@@ -7,6 +7,8 @@ import lombok.Data;
 @Data
 @Builder
 @AllArgsConstructor
-public class RequestBody {
-    private Integer bpm;
+public class SongRequestBody {
+    private String title;
+    private String artist;
+    private String album;
 }

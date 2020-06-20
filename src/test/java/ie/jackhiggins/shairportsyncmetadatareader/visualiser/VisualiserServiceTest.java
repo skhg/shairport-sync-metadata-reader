@@ -1,6 +1,7 @@
 package ie.jackhiggins.shairportsyncmetadatareader.visualiser;
 
 import com.github.tomakehurst.wiremock.WireMockServer;
+import ie.jackhiggins.shairportsyncmetadatareader.reader.Track;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -29,12 +30,26 @@ class VisualiserServiceTest {
     }
 
     @Test
-    public void sendCurrentTempo_sendsPostRequestInCorrectFormat(){
+    public void sendCurrentTempo_sendsPutRequestInCorrectFormat(){
         visualiserService.sendCurrentTempo(123);
 
         verify(putRequestedFor(urlEqualTo("/tempo"))
                 .withHeader(HttpHeaders.CONTENT_TYPE, equalTo(MediaType.APPLICATION_JSON_VALUE))
                 .withRequestBody(equalToJson("{\"bpm\":123}"))
+        );
+    }
+
+    @Test
+    public void sendCurrentTrack_sendsPutRequestInCorrectFormat(){
+        visualiserService.sendCurrentTrack(Track.builder()
+                .title("Bloodless")
+                .album("My Finest Work Yet")
+                .artist("Andrew Bird")
+                .build());
+
+        verify(putRequestedFor(urlEqualTo("/song"))
+                .withHeader(HttpHeaders.CONTENT_TYPE, equalTo(MediaType.APPLICATION_JSON_VALUE))
+                .withRequestBody(equalToJson("{\"title\":\"Bloodless\",\"album\":\"My Finest Work Yet\",\"artist\":\"Andrew Bird\"}"))
         );
     }
 }
