@@ -29,7 +29,7 @@ public class Track {
         return Optional.ofNullable(title);
     }
 
-    public boolean isValid(){
+    public boolean isNotBlank(){
         return StringUtils.isNotBlank(artist) && StringUtils.isNotBlank(album) && StringUtils.isNotBlank(title);
     }
 }

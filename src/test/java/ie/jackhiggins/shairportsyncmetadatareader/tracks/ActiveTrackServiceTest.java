@@ -65,7 +65,13 @@ class ActiveTrackServiceTest {
                 .title(StringUtils.EMPTY)
                 .build());
 
-        verifyNoInteractions(visualiserService);
+        verify(visualiserService, times(1)).sendCurrentTrack(Track.builder()
+                .artist(StringUtils.EMPTY)
+                .album(StringUtils.EMPTY)
+                .title(StringUtils.EMPTY)
+                .build());
+        
+        verifyNoMoreInteractions(visualiserService);
         verifyNoInteractions(tempoRetrievalService);
     }
 

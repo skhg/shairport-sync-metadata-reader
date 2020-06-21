@@ -41,17 +41,15 @@ public class ActiveTrackService {
     }
 
     private void onTrackChanged(){
-        if(!currentTrack.isValid()){
-            return;
-        }
-
         visualiserService.sendCurrentTrack(currentTrack);
 
-        tempoRetrievalService.getSongBpm(
-                currentTrack.getArtist().orElse(StringUtils.EMPTY),
-                currentTrack.getAlbum().orElse(StringUtils.EMPTY),
-                currentTrack.getTitle().orElse(StringUtils.EMPTY))
-                .whenComplete((result, ex) -> setMetadataBpm(result));
+        if(currentTrack.isNotBlank()){
+            tempoRetrievalService.getSongBpm(
+                    currentTrack.getArtist().orElse(StringUtils.EMPTY),
+                    currentTrack.getAlbum().orElse(StringUtils.EMPTY),
+                    currentTrack.getTitle().orElse(StringUtils.EMPTY))
+                    .whenComplete((result, ex) -> setMetadataBpm(result));
+        }
     }
 
     void setMetadataBpm(Integer bpm){
