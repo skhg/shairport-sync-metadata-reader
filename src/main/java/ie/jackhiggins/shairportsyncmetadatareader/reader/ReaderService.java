@@ -70,6 +70,7 @@ public class ReaderService {
     }
 
     private void processRawLine(String rawLine){
+        log.trace("Reading next line {}", rawLine);
         if(rawLine.startsWith("<item")){
             Matcher matcher = itemPattern.matcher(rawLine);
             if(matcher.find()){
@@ -97,11 +98,13 @@ public class ReaderService {
     }
 
     private void setNextDataType(String type, String code){
+        log.debug("Next data type: {} code: {}", type, code);
         nextType = Optional.empty();
 
         for(MetadataTypes metaType: MetadataTypes.values()){
             if(type.equals(metaType.getCode())){
                 nextType = Optional.of(metaType);
+                log.debug("Identified next data type as {}", metaType);
             }
         }
 
@@ -110,11 +113,13 @@ public class ReaderService {
         for(MetadataCodes metaCode: MetadataCodes.values()){
             if(code.equals(metaCode.getCode())){
                 nextCode = Optional.of(metaCode);
+                log.debug("Identified next data code as {}", metaCode);
             }
         }
     }
 
     private void handleNextData(String rawData){
+        log.debug("Next data line {}", rawData);
         nextCode.ifPresent(code->{
             switch(code){
                 case METADATA_SEQUENCE_START: playingTrack = new Track(); break;
