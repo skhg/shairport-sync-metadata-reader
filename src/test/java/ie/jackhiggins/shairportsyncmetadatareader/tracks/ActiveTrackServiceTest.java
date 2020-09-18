@@ -41,7 +41,7 @@ class ActiveTrackServiceTest {
                 .title("Dopamine")
                 .build();
 
-        activeTrackService.setCurrentTrack(Track.builder()
+        activeTrackService.playingTrack(Track.builder()
                 .album("Dance Moves")
                 .artist("Franc Moody")
                 .title("Dopamine")
@@ -59,7 +59,7 @@ class ActiveTrackServiceTest {
                 .title("Dopamine")
                 .build();
 
-        activeTrackService.setCurrentTrack(Track.builder()
+        activeTrackService.playingTrack(Track.builder()
                 .album(StringUtils.EMPTY)
                 .artist(StringUtils.EMPTY)
                 .title(StringUtils.EMPTY)
@@ -82,7 +82,7 @@ class ActiveTrackServiceTest {
 
         when(tempoRetrievalService.getSongBpm(any(), any(), any())).thenReturn(completedResult);
 
-        activeTrackService.setCurrentTrack(Track.builder()
+        activeTrackService.playingTrack(Track.builder()
                 .album("Part 1 Everything Not Saved Will Be Lost")
                 .artist("Foals")
                 .title("Exits")
@@ -99,7 +99,7 @@ class ActiveTrackServiceTest {
 
         when(tempoRetrievalService.getSongBpm(any(), any(), any())).thenReturn(completedResult);
 
-        activeTrackService.setCurrentTrack(Track.builder()
+        activeTrackService.playingTrack(Track.builder()
                 .album("Odyssée (Version acoustique)")
                 .artist("L'Impératrice")
                 .title("Parfum thérémine - Version acoustique")

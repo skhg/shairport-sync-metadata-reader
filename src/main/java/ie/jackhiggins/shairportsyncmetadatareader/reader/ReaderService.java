@@ -39,6 +39,7 @@ public class ReaderService {
     private Optional<MetadataTypes> nextType = Optional.empty();
 
     private Track playingTrack = new Track();
+    private Client connectedClient = new Client();
 
     private boolean keepReading(){
         return true;
@@ -98,7 +99,7 @@ public class ReaderService {
     }
 
     private void setNextDataType(String type, String code){
-        log.debug("Next data type: {} code: {}", type, code);
+        log.debug("Next data line: type '{}' code '{}'", type, code);
         nextType = Optional.empty();
 
         for(MetadataTypes metaType: MetadataTypes.values()){
@@ -122,11 +123,22 @@ public class ReaderService {
         log.debug("Next data line {}", rawData);
         nextCode.ifPresent(code->{
             switch(code){
+                case CLIENT_USER_AGENT: {
+                    connectedClient = new Client();
+                    connectedClient.setUserAgent(base64toString(rawData));
+                    break;
+                }
+                case CLIENT_IP: connectedClient.setIpAddress(base64toString(rawData)); break;
+                case PLAY_STREAM_END: {
+                    connectedClient = new Client();
+                    activeTrackService.playEnded();
+                    break;
+                }
                 case METADATA_SEQUENCE_START: playingTrack = new Track(); break;
                 case MEDIA_ALBUM: playingTrack.setAlbum(base64toString(rawData)); break;
                 case MEDIA_ARTIST: playingTrack.setArtist(base64toString(rawData)); break;
                 case MEDIA_TITLE: playingTrack.setTitle(base64toString(rawData)); break;
-                case METADATA_SEQUENCE_END: activeTrackService.setCurrentTrack(playingTrack); break;
+                case METADATA_SEQUENCE_END: activeTrackService.playingTrack(playingTrack); break;
                 default:  log.debug("Ignored data for Type: {} Code: {}", nextType, nextCode); break;
             }
         });

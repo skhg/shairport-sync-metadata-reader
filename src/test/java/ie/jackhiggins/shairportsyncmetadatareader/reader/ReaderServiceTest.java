@@ -42,13 +42,26 @@ class ReaderServiceTest {
     RandomAccessFile simulatedStreamWriter;
 
     @Test
+    public void runReader_clientPausesAndDisconnects_switchesTrackBackToNone() throws IOException {
+        readerService.streamLocation = "./src/test/resources/play_pause_disconnect.log";
+        readerService.onStreamEnded = ()-> readerService.onStreamLoop = () -> false; //We deliberately do not want to try to continue reading the stream
+
+        readerService.runReader();
+
+//        verify(activeTrackService, times(4)).playingTrack(trackChangeCaptor.capture());
+//        verify(activeTrackService, times(1)).playEnded();
+//
+//        List<Track> allTrackChanges = trackChangeCaptor.getAllValues();
+    }
+
+    @Test
     public void runReader_switchesTracks() throws IOException {
         readerService.streamLocation = "./src/test/resources/track_changes.log";
         readerService.onStreamEnded = ()-> readerService.onStreamLoop = () -> false; //We deliberately do not want to try to continue reading the stream
 
         readerService.runReader();
 
-        verify(activeTrackService, times(14)).setCurrentTrack(trackChangeCaptor.capture());
+        verify(activeTrackService, times(14)).playingTrack(trackChangeCaptor.capture());
 
         List<Track> allTrackChanges = trackChangeCaptor.getAllValues();
 

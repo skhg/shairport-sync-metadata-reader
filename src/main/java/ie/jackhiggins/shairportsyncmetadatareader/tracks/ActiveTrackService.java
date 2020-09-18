@@ -32,12 +32,18 @@ public class ActiveTrackService {
         return currentBpm;
     }
 
-    public void setCurrentTrack(Track newTrack){
+    public void playingTrack(Track newTrack){
         if(!newTrack.equals(currentTrack)){
             currentTrack = newTrack;
             log.info("New track playing: {}", newTrack);
             onTrackChanged();
         }
+    }
+
+    public void playEnded(){
+        currentTrack = Track.builder().build();
+        log.info("Play stopped");
+        onTrackChanged();
     }
 
     private void onTrackChanged(){
