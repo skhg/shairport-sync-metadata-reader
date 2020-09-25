@@ -2,7 +2,6 @@ package ie.jackhiggins.shairportsyncmetadatareader.tracks;
 
 import ie.jackhiggins.shairportsyncmetadatareader.reader.Track;
 import ie.jackhiggins.shairportsyncmetadatareader.tempo.TempoRetrievalService;
-import ie.jackhiggins.shairportsyncmetadatareader.visualiser.VisualiserService;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -27,9 +26,6 @@ class ActiveTrackServiceTest {
     @Mock
     TempoRetrievalService tempoRetrievalService;
 
-    @Mock
-    VisualiserService visualiserService;
-
     @InjectMocks
     ActiveTrackService activeTrackService;
 
@@ -47,7 +43,6 @@ class ActiveTrackServiceTest {
                 .title("Dopamine")
                 .build());
 
-        verifyNoInteractions(visualiserService);
         verifyNoInteractions(tempoRetrievalService);
     }
 
@@ -65,13 +60,6 @@ class ActiveTrackServiceTest {
                 .title(StringUtils.EMPTY)
                 .build());
 
-        verify(visualiserService, times(1)).sendCurrentTrack(Track.builder()
-                .artist(StringUtils.EMPTY)
-                .album(StringUtils.EMPTY)
-                .title(StringUtils.EMPTY)
-                .build());
-        
-        verifyNoMoreInteractions(visualiserService);
         verifyNoInteractions(tempoRetrievalService);
     }
 
@@ -89,7 +77,6 @@ class ActiveTrackServiceTest {
                 .build());
 
         verify(tempoRetrievalService, times(1)).getSongBpm("Foals", "Part 1 Everything Not Saved Will Be Lost", "Exits");
-        verify(visualiserService, times(1)).sendCurrentTempo(1);
     }
 
     @Test
@@ -106,12 +93,7 @@ class ActiveTrackServiceTest {
                 .build());
 
         verify(tempoRetrievalService, times(1)).getSongBpm("L'Impératrice", "Odyssée (Version acoustique)", "Parfum thérémine - Version acoustique");
-        verify(visualiserService, times(1)).sendCurrentTrack(Track.builder()
-                .album("Odyssée (Version acoustique)")
-                .artist("L'Impératrice")
-                .title("Parfum thérémine - Version acoustique")
-                .build());
-        verifyNoMoreInteractions(visualiserService);
+
         verifyNoMoreInteractions(tempoRetrievalService);
 
         assertThat(activeTrackService.getCurrentBpm(), is(equalTo(Optional.empty())));

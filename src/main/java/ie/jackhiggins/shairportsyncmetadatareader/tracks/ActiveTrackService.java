@@ -2,7 +2,6 @@ package ie.jackhiggins.shairportsyncmetadatareader.tracks;
 
 import ie.jackhiggins.shairportsyncmetadatareader.reader.Track;
 import ie.jackhiggins.shairportsyncmetadatareader.tempo.TempoRetrievalService;
-import ie.jackhiggins.shairportsyncmetadatareader.visualiser.VisualiserService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
@@ -14,14 +13,12 @@ import java.util.Optional;
 public class ActiveTrackService {
 
     private final TempoRetrievalService tempoRetrievalService;
-    private final VisualiserService visualiserService;
 
     Track currentTrack = new Track();
     Optional<Integer> currentBpm = Optional.empty();
 
-    public ActiveTrackService(TempoRetrievalService tempoRetrievalService, VisualiserService visualiserService){
+    public ActiveTrackService(TempoRetrievalService tempoRetrievalService){
         this.tempoRetrievalService = tempoRetrievalService;
-        this.visualiserService = visualiserService;
     }
 
     public Track getCurrentTrack(){
@@ -41,8 +38,6 @@ public class ActiveTrackService {
     }
 
     private void onTrackChanged(){
-        visualiserService.sendCurrentTrack(currentTrack);
-
         if(currentTrack.isNotBlank()){
             tempoRetrievalService.getSongBpm(
                     currentTrack.getArtist().orElse(StringUtils.EMPTY),
@@ -55,7 +50,5 @@ public class ActiveTrackService {
     void setMetadataBpm(Integer bpm){
         log.info("Got BPM of {} for playing track", bpm);
         currentBpm = Optional.ofNullable(bpm);
-        currentBpm.ifPresent(visualiserService::sendCurrentTempo);
-        // This would be more suitable as a pub/sub model but we only have one client for now
     }
 }

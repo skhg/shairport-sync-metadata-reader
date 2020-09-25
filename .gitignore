@@ -17,4 +17,4 @@ stamp-h1
 .deps
 *.iml
 target/
-
+.idea/
